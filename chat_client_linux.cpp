@@ -1,7 +1,8 @@
 /**
  * @file chat_client.cpp
  * @brief A Linux-compatible C++ frontend for the TCP chat application.
- *
+ * @author sabyasachiGorai
+ * @date Novemember 21 2025
  * Works inside GitHub Codespaces or any Linux environment.
  */
 
