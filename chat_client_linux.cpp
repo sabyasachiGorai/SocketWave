@@ -1,17 +1,37 @@
 /**
  * @file chat_client.cpp
- * @brief Improved Linux TCP chat client for OOPS project.
+ * @brief Improved Linux TCP chat client with colors and timestamps.
  */
 
 #include <iostream>
 #include <string>
 #include <thread>
 #include <mutex>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
 std::mutex coutMutex;
+
+// ====== COLOR CODES (FEATURE 1) ======
+#define RESET   "\033[0m"
+#define CYAN    "\033[36m"   // Messages from others
+#define GREEN   "\033[32m"   // Server system messages
+#define YELLOW  "\033[33m"   // Your own message prefix
+
+// ====== TIMESTAMP FUNCTION (FEATURE 2) ======
+std::string getTimestamp() {
+    auto now = std::chrono::system_clock::now();
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
+    std::tm *tmPtr = std::localtime(&t);
+
+    char buffer[16];
+    std::strftime(buffer, sizeof(buffer), "%H:%M", tmPtr);
+    return std::string(buffer);
+}
 
 /**
  * @brief Handles receiving messages from the server.
@@ -22,9 +42,20 @@ void receiveMessages(int socketFd) {
         int bytesReceived = recv(socketFd, buffer, sizeof(buffer) - 1, 0);
         if (bytesReceived > 0) {
             buffer[bytesReceived] = '\0';
+
+            std::string msg(buffer);
+            std::string ts = "[" + getTimestamp() + "] ";
+
             std::lock_guard<std::mutex> lock(coutMutex);
-            std::cout << "\n" << buffer << std::endl;
-            std::cout << "You: ";
+
+            // Color rules
+            if (msg.rfind("SERVER:", 0) == 0) {
+                std::cout << "\n" << ts << GREEN << msg << RESET << std::endl;
+            } else {
+                std::cout << "\n" << ts << CYAN << msg << RESET << std::endl;
+            }
+
+            std::cout << YELLOW << "You: " << RESET;
         } 
         else {
             std::lock_guard<std::mutex> lock(coutMutex);
@@ -54,7 +85,7 @@ int main() {
         return 1;
     }
 
-    std::cout << "Connected to server." << std::endl;
+    std::cout << GREEN << "Connected to server." << RESET << std::endl;
 
     // LOGIN flow
     std::string username;
@@ -69,7 +100,8 @@ int main() {
 
     // Sending loop
     std::string message;
-    std::cout << "You: ";
+    std::cout << YELLOW << "You: " << RESET;
+
     while (true) {
         std::getline(std::cin, message);
 
