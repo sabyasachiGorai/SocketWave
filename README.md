@@ -1,207 +1,212 @@
-# **SocketWave – Real-time TCP Chat System**
 
-A lightweight client-server chat application built using **C++ (client)** and **Node.js (server)** using **TCP sockets**.
-This project demonstrates networking concepts, socket programming, OOP thinking, and real-time message broadcasting.
+# ⚡ SOCKETWAVE – TCP Chat Application
+A lightweight, multi-user chat system built using:
 
----
+- **Node.js (TCP Chat Server + Express API)**
+- **C++ Linux Client**
+- **C++ Windows Client**
 
-## 🚀 **Project Overview**
-
-**SocketWave** is a real-time chat system where multiple users can connect to a Node.js TCP server and communicate using a C++ client.
-It follows a classic **client–server architecture**, showing how sockets, threads, message broadcasting, and authentication work together.
-
-The project includes:
-
-* ✅ A **C++ client** (Linux compatible)
-* ✅ A **Node.js TCP server**
-* ✅ User login system
-* ✅ Real-time message broadcasting to all connected clients
-* ✅ `/quit` support
-* ✅ Express.js API to list currently connected users
-
-This system can run inside **GitHub Codespaces**, Linux, or any UNIX environment.
+This project demonstrates TCP networking, sockets, threading, and basic protocol design — ideal for an Object-Oriented Programming assignment.
 
 ---
 
-## 🧩 **Tech Stack**
+## 📁 Project Structure
 
-### **Client (Frontend)**
+```
 
-* **C++**
-* POSIX Sockets (`arpa/inet.h`, `sys/socket.h`)
-* Multithreading (`std::thread`)
-* Linux environment support
+SOCKETWAVE/
+│
+├── backend/
+│   ├── package.json
+│   ├── package-lock.json
+│   └── server.js                 # Node.js TCP + HTTP server
+│
+├── chat_client_linux.cpp         # Linux C++ chat client (multithreaded)
+├── chat_client_win.cpp           # Windows C++ chat client (winsock version)
+│
+└── README.md
 
-### **Server (Backend)**
-
-* **Node.js**
-* `net` module for raw TCP communication
-* `express` for HTTP API
-* Map-based session tracking
+````
 
 ---
 
-## 📌 **Features**
+# 🚀 1. Features
 
-### 🔹 **User Login**
+### 🟢 Server (Node.js)
+- Accepts multiple TCP clients simultaneously  
+- LOGIN system (`LOGIN <username>`)  
+- Broadcasts messages to all users  
+- Notifies when users join or leave  
+- Simple HTTP API using Express  
+  - `/users` → list connected users  
+  - `/` → server status  
 
-Clients must log in using:
+### 🔵 Linux C++ Client
+- Automatic login prompt  
+- Multi-threaded message receiving  
+- Colored chat output (ANSI-based)  
+- Timestamps on every message  
+- Graceful exit using `/quit`  
 
-```
-LOGIN <username>
-```
-
-Before logging in, server rejects messages.
-
----
-
-### 🔹 **Real-Time Chat**
-
-After login, users can send messages that are broadcasted to all other connected clients:
-
-```
-username: message
-```
-
----
-
-### 🔹 **Graceful Exit**
-
-Client can leave using:
-
-```
-/quit
-```
-
-This closes the connection and notifies others.
+### 🟣 Windows C++ Client
+- Same functionality as Linux version  
+- Uses WinSock2  
+- Works on Windows Terminal / PowerShell  
 
 ---
 
-### 🔹 **HTTP API Endpoint**
+# ⚙️ 2. Requirements
 
-List all active users:
+### Server
+- Node.js v16+
+- npm  
 
-```
-GET /users
-```
+### Linux Client
+- g++ compiler  
+- POSIX socket support (Ubuntu / WSL / Codespaces)  
 
-Response:
-
-```json
-{
-  "users": ["sabyasachi", "testUser"]
-}
-```
+### Windows Client
+- MinGW g++ or Visual Studio Build Tools  
+- WinSock2 installed by default  
 
 ---
 
-## 📁 **Project Structure**
+# 🖥️ 3. Running the Node.js Server
 
+### Step 1 — Move into backend directory
+```bash
+cd backend
+````
+
+### Step 2 — Install dependencies
+
+```bash
+npm install
 ```
-/project
-│── chat_client.cpp     # C++ Linux client
-│── server.js           # Node.js TCP server + Express API
-│── README.md           # Project documentation
-```
 
----
-
-## ⚙️ **How to Run**
-
-### 1️⃣ Start the TCP + HTTP Server (Node.js)
+### Step 3 — Start the server
 
 ```bash
 node server.js
 ```
 
-Server runs on:
+You should see:
 
-* TCP → **4000**
-* HTTP → **3000**
+```
+TCP chat server listening on port 4000
+Express HTTP server listening on port 3000
+```
 
 ---
 
-### 2️⃣ Compile the C++ Client (Linux)
+# 🔗 4. Testing Server API (Optional)
+
+### List Connected Users
+
+```
+http://localhost:3000/users
+```
+
+### Server Status
+
+```
+http://localhost:3000/
+```
+
+---
+
+# 🧪 5. Running the Linux C++ Client
+
+### Step 1 — Compile
 
 ```bash
-g++ chat_client.cpp -o client -pthread
+g++ chat_client_linux.cpp -o chatclient -pthread
 ```
 
-### 3️⃣ Run the Client
+### Step 2 — Run
 
 ```bash
-./client
+./chatclient
 ```
 
-You’ll see:
-
-```
-Connected to the server.
-WELCOME: send "LOGIN <username>" to join
-```
-
-Then log in:
-
-```
-LOGIN sabyasachi
-```
-
-Start chatting 🎉
+Then enter your username when prompted.
 
 ---
 
-## 🔍 **How OOP Concepts Apply**
+# 🪟 6. Running the Windows C++ Client
 
-Even though sockets are procedural, your architecture demonstrates:
+### Step 1 — Compile using MinGW
 
-### **1. Encapsulation**
+```bash
+g++ chat_client_win.cpp -o chatclient.exe -lws2_32
+```
 
-* Receiving messages handled by a dedicated function `receiveMessages()`
-* Sending handled in main loop
-
-### **2. Abstraction**
-
-* User interacts only through commands (`LOGIN`, `/quit`)
-* Networking logic hidden behind sockets
-
-### **3. Responsibility Separation**
-
-Client → handles input & display
-Server → handles login, broadcasting, user tracking
-
-### **4. Modular Design**
-
-* Independent client and server components
-* Thread handling separated from message logic
-
-This makes it a valid and strong OOPS-related project.
-
----
-
-## 🧪 **Sample Output**
+### Step 2 — Run
 
 ```
-Connected to the server.
-LOGIN sabyasachi
-LOGIN_OK Welcome, sabyasachi
-SERVER: sammy has joined the chat
-sammy: Hey!
-sabyasachi: Hello!
+chatclient.exe
 ```
 
 ---
 
-## 🎯 **Future Improvements**
+# 💬 7. Chat Usage
 
-* Add private messaging
-* Add user authentication with passwords
-* Add a GUI client
-* Add chat history storage
-* Add typing indicators
+After login, type messages normally.
+
+### Exit the chat
+
+```
+/quit
+```
+
+### Example interaction
+
+```
+[17:40] SERVER: Alice has joined the chat  
+[17:41] Alice: Hi everyone!  
+You: Hello Alice!  
+```
 
 ---
 
-## 🏁 **Conclusion**
+# 🔌 8. How the Protocol Works
 
-**SocketWave** is a simple yet powerful demonstration of networking, sockets, threads, OOP principles, and full-stack thinking.
-Perfect for academic submissions and future expansion 🚀
+| Action       | Message Format     |
+| ------------ | ------------------ |
+| Login        | `LOGIN <username>` |
+| Chat message | `<text>`           |
+| Quit         | `/quit`            |
+
+Server broadcasts messages to all connected users except the sender.
+
+---
+
+# 🛠️ 9. Troubleshooting
+
+### ❌ "Connection refused"
+
+* Make sure server is running on **port 4000**
+* Make sure you are using this IP:
+
+```
+127.0.0.1
+```
+
+### ❌ Linux client stops receiving messages
+
+* Ensure you compiled with:
+
+```
+-pthread
+```
+
+### ❌ Windows compile error: ws2_32 not found
+
+Add the library flag:
+
+```
+-lws2_32
+```
+
+---
+
